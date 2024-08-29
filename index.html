@@ -651,6 +651,257 @@
                 margin-bottom: 1rem;
             }
         }
+        
+        .gallery {
+            padding: 6rem 0;
+            background: var(--background-color);
+        }
+
+        .gallery h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stats {
+            padding: 4rem 0;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-item .stat-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .stat-item span {
+            display: block;
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .coming-soon {
+            padding: 6rem 0;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+        }
+
+        .coming-soon h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+            font-size: 2.5rem;
+            color: #fff;
+        }
+
+        .coming-soon-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .coming-soon-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+        }
+
+        .coming-soon-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .coming-soon-item i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon-item h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .updates {
+            padding: 6rem 0;
+            background: var(--background-color);
+        }
+
+        .updates h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .update-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .update-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: var(--background-color);
+            border: 4px solid var(--primary-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            left: 50%;
+        }
+
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid var(--primary-color);
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent var(--primary-color);
+        }
+
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid var(--primary-color);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent var(--primary-color) transparent transparent;
+        }
+
+        .right::after {
+            left: -16px;
+        }
+
+        .update-content {
+            padding: 20px 30px;
+            background-color: var(--card-background);
+            position: relative;
+            border-radius: 6px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .timeline::after {
+                left: 31px;
+            }
+
+            .update-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .update-item::before {
+                left: 60px;
+                border: medium solid var(--primary-color);
+                border-width: 10px 10px 10px 0;
+                border-color: transparent var(--primary-color) transparent transparent;
+            }
+
+            .left::after, .right::after {
+                left: 15px;
+            }
+
+            .right {
+                left: 0%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -664,6 +915,9 @@
                     <li><a href="#installation">Instalación</a></li>
                     <li><a href="#vulnerabilities">Vulnerabilidades</a></li>
                     <!-- <li><a href="#testimonials">Testimonios</a></li>  Añadir cuando tenga testimonios-->
+                    <li><a href="#gallery">Galería</a></li>
+                    <li><a href="#coming-soon">Próximamente</a></li>
+                    <li><a href="#updates">Actualizaciones</a></li>
                     <li><a href="#faq">FAQ</a></li>
                     <li><a href="#resources">Recursos</a></li>
                 </ul>
@@ -805,6 +1059,96 @@
             </div>
         </div>
     </section> -->
+    
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2>Galería de Capturas de Pantalla</h2>
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <img src="https://raw.githubusercontent.com/sil3ntH4ck3r/sil3nth4ck3r.github.io/main/LaTeX.png" alt="WebVulnLab Screenshot 1">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://raw.githubusercontent.com/sil3ntH4ck3r/sil3nth4ck3r.github.io/main/Tablero.png" alt="WebVulnLab Screenshot 2">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://raw.githubusercontent.com/sil3ntH4ck3r/sil3nth4ck3r.github.io/main/fileUpload.png" alt="WebVulnLab Screenshot 3">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="stats">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value">
+                    	<i class="fas fa-star"></i>
+                        <i id="github-stars">0</i>
+                    </div>
+                    <span>Estrellas en GitHub</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                    	<i class="fa-solid fa-code-fork"></i>
+                        <i id="github-forks">0</i>
+                    </div>
+                    <span>Forks</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="coming-soon" class="coming-soon">
+        <div class="container">
+            <h2>Próximamente</h2>
+            <div class="coming-soon-list">
+                <div class="coming-soon-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Nuevas Vulnerabilidades</h3>
+                    <p>Implementación de las últimas vulnerabilidades descubiertas en entornos reales.</p>
+                </div>
+                <div class="coming-soon-item">
+                    <i class="fas fa-users"></i>
+                    <h3>Nuevo Blog</h3>
+                    <p>Explora y aprende de las publicaciones de otros usuarios, y luego crea y comparte una guía detallada para resolver los desafíos.</p>
+                </div>
+                <div class="coming-soon-item">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Sistema de Logros</h3>
+                    <p>Gana insignias y reconocimientos por tus habilidades en ciberseguridad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="updates" class="updates">
+        <div class="container">
+            <h2>Últimas Actualizaciones</h2>
+            <div class="timeline">
+                <div class="update-item left">
+                    <div class="update-content">
+                        <h3>Arreglando errores: LaTeX Injection</h3>
+                        <p>Hemos arreglado un error que no permitía generar documentos con LaTeX.</p>
+                        <div class="date">14 de Agosto, 2024</div>
+                    </div>
+                </div>
+                <div class="update-item right">
+                    <div class="update-content">
+                        <h3>Mejora de la Documentación</h3>
+                        <p>Hemos actualizado y expandido nuestra documentación para incluir más guías detalladas.</p>
+                        <div class="date">1 de Abril, 2024</div>
+                    </div>
+                </div>
+                <div class="update-item left">
+                    <div class="update-content">
+                        <h3>Nueva Vulnerabilidad: OAuth y Werkzeug Debugger Console Abuse</h3>
+                        <p>Hemos añadido un nuevo escenario con un OAuth vulnerable.</p>
+                        <div class="date">1 de Abril, 2024</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section id="faq" class="faq">
         <div class="container">
@@ -882,9 +1226,9 @@
         <div class="container">
             <p>&copy; 2024 WebVulnLab. Potenciando la próxima generación de expertos en ciberseguridad de forma gratuita y accesible.</p>
             <div class="social-share">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-discord"></i></a>
+                <!-- <a href="#"><i class="fab fa-twitter"></i></a> -->
+                <!-- <a href="#"><i class="fab fa-facebook"></i></a> -->
+                <!-- <a href="#"><i class="fab fa-discord"></i></a> -->
                 <a href="https://github.com/sil3nth4ck3r/WebVulnLab/tree/dev"><i class="fab fa-github"></i></a>
             </div>
         </div>
@@ -931,6 +1275,25 @@
                     header.classList.remove('scrolled');
                 }
             });
+            
+            // Función para obtener estadísticas de GitHub
+            async function getGitHubStats() {
+                const username = 'sil3nth4ck3r';
+                const repo = 'WebVulnLab';
+                try {
+                    const response = await fetch(`https://api.github.com/repos/${username}/${repo}`);
+                    const data = await response.json();
+                    
+                    document.querySelector('#github-stars').textContent = data.stargazers_count;
+                    document.querySelector('#github-forks').textContent = data.forks_count;
+                    
+                } catch (error) {
+                    console.error('Error al obtener estadísticas de GitHub:', error);
+                }
+            }
+
+            // Llamar a la función para obtener estadísticas de GitHub
+            getGitHubStats();
 
             // FAQ toggle
              faqItems = document.querySelectorAll('.faq-item');
@@ -1027,7 +1390,6 @@
                 setCookie('cookiesRejected', 'true', 365);
                 cookieBanner.classList.remove('show');
                 logUserInteraction('Cookies Rejected');
-                // No inicializamos Google Analytics si el usuario rechaza las cookies
             });
 
             // Función para registrar interacciones del usuario
