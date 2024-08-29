@@ -9,9 +9,11 @@
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSZDYJCC7"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WYSZDYJCC7');
     </script>
     <style>
         :root {
@@ -526,15 +528,17 @@
             bottom: -100%;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--card-background);
+            background: rgba(var(--primary-color-rgb), 0.95);
+            color: #ffffff;
             padding: 1.5rem;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             width: 90%;
             max-width: 400px;
             text-align: center;
             transition: bottom 0.5s ease-in-out;
+            backdrop-filter: blur(5px);
         }
 
         .cookie-banner.show {
@@ -543,6 +547,7 @@
 
         .cookie-banner p {
             margin-bottom: 1rem;
+            line-height: 1.6;
         }
 
         .cookie-buttons {
@@ -561,14 +566,14 @@
         }
 
         .cookie-btn.accept {
-            background: var(--primary-color);
-            color: #fff;
+            background: #ffffff;
+            color: var(--primary-color);
         }
 
         .cookie-btn.reject {
-            background: var(--card-background);
-            color: var(--text-color);
-            border: 1px solid var(--text-color);
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid #ffffff;
         }
 
         .cookie-btn:hover {
@@ -899,8 +904,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            const fadeElems = document.querySelectorAll('.fade-in-up');
-            const observer = new IntersectionObserver((entries) => {
+             fadeElems = document.querySelectorAll('.fade-in-up');
+             observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.style.opacity = 1;
@@ -918,7 +923,7 @@
             });
 
             // Header scroll effect
-            const header = document.querySelector('header');
+             header = document.querySelector('header');
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 100) {
                     header.classList.add('scrolled');
@@ -928,9 +933,9 @@
             });
 
             // FAQ toggle
-            const faqItems = document.querySelectorAll('.faq-item');
+             faqItems = document.querySelectorAll('.faq-item');
             faqItems.forEach(item => {
-                const question = item.querySelector('.faq-question');
+                 question = item.querySelector('.faq-question');
                 question.addEventListener('click', () => {
                     item.classList.toggle('active');
                 });
@@ -961,6 +966,22 @@
             const cookieBanner = document.querySelector('.cookie-banner');
             const cookieAcceptBtn = cookieBanner.querySelector('.cookie-btn.accept');
             const cookieRejectBtn = cookieBanner.querySelector('.cookie-btn.reject');
+
+	    const root = document.documentElement;
+            const primaryColor = getComputedStyle(root).getPropertyValue('--primary-color').trim();
+            const rgb = hexToRgb(primaryColor);
+            root.style.setProperty('--primary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+
+            function hexToRgb(hex) {
+                const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+                hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
 
             function setCookie(name, value, days) {
                 let expires = "";
