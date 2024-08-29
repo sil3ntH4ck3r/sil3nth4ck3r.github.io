@@ -6,6 +6,13 @@
     <title>WebVulnLab - Laboratorio Avanzado de Vulnerabilidades Web</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    </script>
     <style>
         :root {
             --primary-color: #3a86ff;
@@ -516,39 +523,88 @@
 
         .cookie-banner {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: -100%;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--card-background);
-            padding: 1rem;
-            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            display: none;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transition: bottom 0.5s ease-in-out;
         }
 
         .cookie-banner.show {
-            display: block;
+            bottom: 20px;
         }
 
-        .cookie-banner button {
-            margin-left: 1rem;
+        .cookie-banner p {
+            margin-bottom: 1rem;
+        }
+
+        .cookie-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .cookie-btn {
             padding: 0.5rem 1rem;
-            background: var(--primary-color);
-            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cookie-btn.accept {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .cookie-btn.reject {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
+        }
+
+        .cookie-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translate3d(0, 40px, 0);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translate3d(0, 0, 0);
             }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
         }
 
         .fade-in-up {
@@ -792,21 +848,21 @@
                 <div class="resource-item fade-in-up">
                     <i class="fas fa-book"></i>
                     <h3>Documentación</h3>
-                    <p>Guías detalladas sobre cómo utilizar WebVulnLab y explotar cada vulnerabilidad.</p>
-                    <a href="#" class="resource-btn">Ver Documentación</a>
+                    <p>Guía detallada sobre cómo utilizar WebVulnLab y próximamente sobre cómo explotar cada vulnerabilidad.</p>
+                    <a href="https://github.com/sil3ntH4ck3r/WebVulnLab/blob/dev/README.md" class="resource-btn">Ver Documentación</a>
                 </div>
                 <div class="resource-item fade-in-up">
                     <i class="fas fa-video"></i>
                     <h3>Tutoriales en Video</h3>
-                    <p>Serie de videos explicativos sobre cómo sacar el máximo provecho de WebVulnLab.</p>
-                    <a href="#" class="resource-btn">Ver Tutoriales</a>
+                    <p>Vídeo explicativo sobre cómo sacar el máximo provecho de WebVulnLab.</p>
+                    <a href="https://youtu.be/6_1874WAAwI?feature=shared" class="resource-btn">Ver Tutorial</a>
                 </div>
-                <div class="resource-item fade-in-up">
+                <!-- <div class="resource-item fade-in-up">
                     <i class="fas fa-users"></i>
                     <h3>Comunidad</h3>
                     <p>Únete a nuestra comunidad de usuarios para compartir conocimientos y resolver dudas.</p>
                     <a href="#" class="resource-btn">Unirse a la Comunidad</a>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>
@@ -834,8 +890,11 @@
     </button>
 
     <div class="cookie-banner">
-        <p>Utilizamos cookies para mejorar tu experiencia y analizar el uso del sitio. Al continuar navegando, aceptas nuestra política de cookies.</p>
-        <button>Aceptar</button>
+        <p>Utilizamos cookies y Google Analytics para mejorar tu experiencia y analizar el uso del sitio. Al continuar navegando, aceptas nuestra política de cookies y el uso de Google Analytics.</p>
+        <div class="cookie-buttons">
+            <button class="cookie-btn accept pulse">Aceptar</button>
+            <button class="cookie-btn reject">Rechazar</button>
+        </div>
     </div>
 
     <script>
@@ -898,9 +957,10 @@
                 }
             });
 
-            // Cookie functionality
+            // Cookie y Google Analytics functionality
             const cookieBanner = document.querySelector('.cookie-banner');
-            const cookieAcceptBtn = cookieBanner.querySelector('button');
+            const cookieAcceptBtn = cookieBanner.querySelector('.cookie-btn.accept');
+            const cookieRejectBtn = cookieBanner.querySelector('.cookie-btn.reject');
 
             function setCookie(name, value, days) {
                 let expires = "";
@@ -923,14 +983,30 @@
                 return null;
             }
 
-            if (!getCookie('cookiesAccepted')) {
-                cookieBanner.classList.add('show');
+            function initializeGoogleAnalytics() {
+                gtag('config', 'GA_MEASUREMENT_ID');
+            }
+
+            if (getCookie('cookiesAccepted') === 'true') {
+                initializeGoogleAnalytics();
+            } else if (!getCookie('cookiesRejected')) {
+                setTimeout(() => {
+                    cookieBanner.classList.add('show');
+                }, 2000);
             }
 
             cookieAcceptBtn.addEventListener('click', () => {
                 setCookie('cookiesAccepted', 'true', 365);
                 cookieBanner.classList.remove('show');
                 logUserInteraction('Cookies Accepted');
+                initializeGoogleAnalytics();
+            });
+
+            cookieRejectBtn.addEventListener('click', () => {
+                setCookie('cookiesRejected', 'true', 365);
+                cookieBanner.classList.remove('show');
+                logUserInteraction('Cookies Rejected');
+                // No inicializamos Google Analytics si el usuario rechaza las cookies
             });
 
             // Función para registrar interacciones del usuario
@@ -941,6 +1017,14 @@
                     timestamp: new Date().toISOString()
                 });
                 localStorage.setItem('userInteractions', JSON.stringify(interactions));
+
+                // Si Google Analytics está inicializado, enviamos el evento
+                if (getCookie('cookiesAccepted') === 'true') {
+                    gtag('event', action, {
+                        'event_category': 'User Interaction',
+                        'event_label': action
+                    });
+                }
             }
 
             // Registrar interacciones del usuario
@@ -962,6 +1046,25 @@
 
             sections.forEach(section => {
                 sectionObserver.observe(section);
+            });
+
+            // Añadir efecto de hover a los elementos interactivos
+            const interactiveElements = document.querySelectorAll('a, button, .feature, .vulnerability-item, .testimonial, .faq-item');
+            interactiveElements.forEach(elem => {
+                elem.addEventListener('mouseenter', () => {
+                    elem.style.transform = 'translateY(-5px)';
+                    elem.style.transition = 'transform 0.3s ease';
+                });
+                elem.addEventListener('mouseleave', () => {
+                    elem.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Añadir efecto de parallax al hero
+            const hero = document.querySelector('.hero');
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.pageYOffset;
+                hero.style.backgroundPositionY = `${scrollPosition * 0.5}px`;
             });
         });
     </script>
