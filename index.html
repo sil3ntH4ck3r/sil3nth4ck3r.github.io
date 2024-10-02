@@ -156,6 +156,23 @@
             color: #fff;
         }
 
+        .hero p.tetris-info a.tetris-link {
+            color: #008080;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .hero p.tetris-info a.tetris-link:hover {
+            color: #006666;
+        }
+
+        .hero p.tetris-info {
+            font-size: 0.8em;
+            color: #ff9800;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         .btn {
             display: inline-block;
             background: var(--accent-color);
@@ -928,8 +945,13 @@
     <section id="home" class="hero">
         <div class="hero-content">
             <h1 class="fade-in-up">WebVulnLab</h1>
-            <p class="fade-in-up">Explora y domina la ciberseguridad con nuestro laboratorio avanzado y gratuito de vulnerabilidades web</p>
+            <p class="fade-in-up">
+                Explora y domina la ciberseguridad con nuestro laboratorio avanzado y gratuito de vulnerabilidades web
+            </p>
             <a href="#cta" class="btn fade-in-up">Descubre Más</a>
+            <p class="tetris-info">
+                (y <a href="http://sil3nth4ck3r.github.io/tetris.html" class="tetris-link">aquí</a> puedes jugar al tetris 🎉!)
+            </p>
         </div>
     </section>
 
