@@ -15,6 +15,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       height: 100vh;
       overflow: hidden;
+      position: relative;
     }
 
     #game {
@@ -23,27 +24,68 @@
       align-items: center;
     }
 
-    /* Botón de inicio */
-    #startButton {
+    /* Contenedor de botones */
+    #buttonsContainer {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Botones de inicio, pausa, guardar y cargar */
+    #startButton, #pauseButton, #saveButton, #loadButton {
       padding: 10px 20px;
       font-size: 18px;
-      margin-bottom: 20px;
       cursor: pointer;
       background-color: #ff4d4d;
       border: none;
       color: #fff;
       border-radius: 5px;
       transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
     }
 
-    #startButton:hover {
+    #startButton {
+      width: 120px;
+      height: 50px;
+      justify-content: center;
+    }
+
+    #saveButton, #loadButton {
+      width: 50px;
+      height: 50px;
+      font-size: 16px;
+    }
+
+    #startButton:hover, #pauseButton:hover, #saveButton:hover, #loadButton:hover {
       background-color: #e60000;
+    }
+
+    /* Selección de dificultad */
+    #difficulty {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+
+    #difficulty:hover {
+      background-color: #555;
     }
 
     /* Canvas principal */
     #tetris {
       border: 4px solid #fff;
       background-color: #000;
+      position: relative;
     }
 
     /* Información lateral */
@@ -59,17 +101,20 @@
       width: 80px;
       height: 80px;
       background-color: #000;
+      position: relative;
     }
 
     #info p {
       text-align: center;
       margin: 5px 0;
+      font-size: 16px;
     }
 
     /* Puntuación */
     #score {
-      font-size: 24px;
+      font-size: 28px;
       margin-top: 20px;
+      font-weight: bold;
     }
 
     /* Menú de controles */
@@ -78,10 +123,12 @@
       top: 20px;
       right: 20px;
       text-align: right;
+      max-width: 200px;
     }
 
     #menu h2 {
       margin-bottom: 10px;
+      font-size: 20px;
     }
 
     #menu ul {
@@ -91,6 +138,7 @@
 
     #menu li {
       margin: 5px 0;
+      font-size: 16px;
     }
 
     /* Pie de página */
@@ -102,11 +150,49 @@
       width: 100%;
       color: #888;
     }
+
+    /* Animaciones */
+    .line-clear {
+      animation: fadeOut 0.5s forwards;
+    }
+
+    @keyframes fadeOut {
+      from { background-color: yellow; }
+      to { opacity: 0; }
+    }
+
+    /* Responsividad */
+    @media (max-width: 600px) {
+      #info {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #info div {
+        margin-bottom: 10px;
+      }
+
+      #menu {
+        position: static;
+        text-align: center;
+        margin-top: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="game">
-    <button id="startButton">Iniciar Juego</button>
+    <select id="difficulty">
+      <option value="easy">Fácil</option>
+      <option value="medium">Medio</option>
+      <option value="advanced">Avanzado</option>
+    </select>
+    <div id="buttonsContainer">
+      <button id="startButton">Iniciar Juego</button>
+      <button id="pauseButton" title="Pausar Juego">⏸</button>
+      <button id="saveButton" title="Guardar Partida">💾</button>
+      <button id="loadButton" title="Cargar Partida">📂</button>
+    </div>
     <canvas id="tetris" width="240" height="400"></canvas>
     <div id="info">
       <div>
@@ -131,6 +217,14 @@
     </ul>
   </div>
   <footer>Created by OpenAI's o1</footer>
+
+  <!-- Elementos de sonido -->
+  <audio id="soundMove" src="https://cdn.freesound.org/previews/148/148509_2597908-lq.mp3"></audio>
+  <audio id="soundRotate" src="https://cdn.freesound.org/previews/757/757949_15890935-lq.mp3"></audio>
+  <audio id="soundDrop" src="https://cdn.freesound.org/previews/625/625568_13668154-lq.mp3"></audio>
+  <audio id="soundLineClear" src="https://cdn.freesound.org/previews/665/665763_12333864-lq.mp3"></audio>
+  <audio id="soundGameOver" src="https://cdn.freesound.org/previews/665/665702_12333864-lq.mp3"></audio>
+
   <script>
     const canvas = document.getElementById('tetris');
     const context = canvas.getContext('2d');
@@ -142,7 +236,17 @@
     const holdContext = holdCanvas.getContext('2d');
 
     const startButton = document.getElementById('startButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const saveButton = document.getElementById('saveButton');
+    const loadButton = document.getElementById('loadButton');
+    const difficultySelect = document.getElementById('difficulty');
     const scoreElement = document.getElementById('score');
+
+    const soundMove = document.getElementById('soundMove');
+    const soundRotate = document.getElementById('soundRotate');
+    const soundDrop = document.getElementById('soundDrop');
+    const soundLineClear = document.getElementById('soundLineClear');
+    const soundGameOver = document.getElementById('soundGameOver');
 
     context.scale(20, 20);
     nextContext.scale(20, 20);
@@ -163,7 +267,15 @@
     let dropCounter = 0;
     let dropInterval = 1000;
     let lastTime = 0;
-    let isPaused = true;
+    let isPaused = false;
+    let isGameOver = false;
+
+    // Configuración de dificultad
+    const difficultySettings = {
+      easy: 1000,     // 1 segundo
+      medium: 600,    // 0.6 segundos
+      advanced: 300   // 0.3 segundos
+    };
 
     // Función para crear una pieza
     function createPiece(type) {
@@ -266,11 +378,12 @@
           return;
         }
       }
+      soundRotate.play();
       updateGhost();
     }
 
     function update(time = 0) {
-      if (!isPaused) {
+      if (!isPaused && !isGameOver) {
         const deltaTime = time - lastTime;
         lastTime = time;
 
@@ -292,6 +405,7 @@
         playerReset();
         arenaSweep();
         updateScore();
+        soundDrop.play();
       }
       dropCounter = 0;
       updateGhost();
@@ -302,6 +416,7 @@
       if (collide(arena, player)) {
         player.pos.x -= dir;
       } else {
+        soundMove.play();
         updateGhost();
       }
     }
@@ -321,7 +436,10 @@
         player.score = 0;
         updateScore();
         isPaused = true;
+        isGameOver = true;
         startButton.style.display = 'block';
+        pauseButton.style.display = 'none';
+        soundGameOver.play();
         alert('Juego terminado');
       }
       player.canHold = true;
@@ -365,23 +483,79 @@
 
     function arenaSweep() {
       let rowCount = 1;
-      outer: for (let y = arena.length - 1; y > 0; --y) {
+      for (let y = arena.length - 1; y > 0; --y) {
+        let rowComplete = true;
         for (let x = 0; x < arena[y].length; ++x) {
           if (arena[y][x] === 0) {
-            continue outer;
+            rowComplete = false;
+            break;
           }
         }
-        const row = arena.splice(y, 1)[0].fill(0);
-        arena.unshift(row);
-        ++y;
+        if (rowComplete) {
+          // Añadir animación de línea completa
+          animateLineClear(y);
+          const row = arena.splice(y, 1)[0].fill(0);
+          arena.unshift(row);
+          y++;
 
-        player.score += rowCount * 10;
-        rowCount *= 2;
+          player.score += rowCount * 10;
+          rowCount *= 2;
+
+          soundLineClear.play();
+        }
       }
+    }
+
+    function animateLineClear(y) {
+      const line = y;
+      // Crear una capa temporal para la animación
+      const animCanvas = document.createElement('canvas');
+      animCanvas.width = canvas.width;
+      animCanvas.height = canvas.height;
+      animCanvas.style.position = 'absolute';
+      animCanvas.style.top = '0';
+      animCanvas.style.left = '0';
+      animCanvas.style.pointerEvents = 'none';
+      document.body.appendChild(animCanvas);
+      const animContext = animCanvas.getContext('2d');
+      animContext.scale(20, 20);
+
+      // Dibujar la línea completa
+      animContext.fillStyle = 'yellow';
+      for (let x = 0; x < arena[0].length; x++) {
+        animContext.fillRect(x + 0, line + 0, 1, 1);
+      }
+
+      // Animación de desvanecimiento
+      let opacity = 1;
+      const fadeInterval = setInterval(() => {
+        opacity -= 0.1;
+        animContext.clearRect(0, 0, animCanvas.width, animCanvas.height);
+        if (opacity > 0) {
+          animContext.globalAlpha = opacity;
+          animContext.fillStyle = 'yellow';
+          for (let x = 0; x < arena[0].length; x++) {
+            animContext.fillRect(x + 0, line + 0, 1, 1);
+          }
+          animContext.globalAlpha = 1;
+        } else {
+          clearInterval(fadeInterval);
+          document.body.removeChild(animCanvas);
+        }
+      }, 50);
     }
 
     function updateScore() {
       scoreElement.innerText = 'Puntuación: ' + player.score;
+      // Actualizar High Score si es necesario
+      if (player.score > player.highScore) {
+        player.highScore = player.score;
+        localStorage.setItem('tetrisHighScore', player.highScore);
+      }
+
+      // Incrementar nivel y velocidad
+      const newDropInterval = Math.max(100, difficultySettings[difficultySelect.value] - Math.floor(player.score / 100) * 50);
+      dropInterval = newDropInterval;
     }
 
     const pieces = 'ILJOTSZ';
@@ -392,6 +566,7 @@
       hold: null,
       canHold: true,
       score: 0,
+      highScore: parseInt(localStorage.getItem('tetrisHighScore')) || 0,
     };
 
     const ghost = {
@@ -427,6 +602,7 @@
     }
 
     function dropInstant() {
+      if (isGameOver) return;
       while (!collide(arena, player)) {
         player.pos.y++;
       }
@@ -435,6 +611,7 @@
       playerReset();
       arenaSweep();
       updateScore();
+      soundDrop.play();
     }
 
     function holdPiece() {
@@ -451,35 +628,63 @@
         player.canHold = false;
         drawHold();
         updateGhost();
+        soundMove.play();
       }
     }
 
     document.addEventListener('keydown', event => {
-      if (!isPaused) {
-        if (event.keyCode === 37) {
+      if (!isPaused && !isGameOver) {
+        if (event.key === 'ArrowLeft') {
           playerMove(-1);
-        } else if (event.keyCode === 39) {
+        } else if (event.key === 'ArrowRight') {
           playerMove(1);
-        } else if (event.keyCode === 40) {
+        } else if (event.key === 'ArrowDown') {
           playerDrop();
-        } else if (event.keyCode === 38) {
+        } else if (event.key === 'ArrowUp') {
           playerRotate(1);
-        } else if (event.keyCode === 81) {
+        } else if (event.key.toLowerCase() === 'q') {
           playerRotate(-1);
-        } else if (event.keyCode === 32) {
+        } else if (event.key === ' ') {
           dropInstant();
-        } else if (event.keyCode === 67) {
+        } else if (event.key.toLowerCase() === 'c') {
           holdPiece();
         }
       }
     });
 
+    // Botón de inicio
     startButton.addEventListener('click', () => {
       startGame();
     });
 
+    // Botón de pausa
+    pauseButton.addEventListener('click', () => {
+      togglePause();
+    });
+
+    // Botón de guardar partida
+    saveButton.addEventListener('click', () => {
+      saveGame();
+    });
+
+    // Botón de cargar partida
+    loadButton.addEventListener('click', () => {
+      loadGame();
+    });
+
     function startGame() {
+      const selectedDifficulty = difficultySelect.value;
+      dropInterval = difficultySettings[selectedDifficulty];
+
+      if (selectedDifficulty === 'advanced') {
+        pauseButton.style.display = 'none';
+      } else {
+        pauseButton.style.display = 'flex';
+        pauseButton.innerText = '⏸';
+      }
+
       isPaused = false;
+      isGameOver = false;
       player.score = 0;
       updateScore();
       arena.forEach(row => row.fill(0));
@@ -488,11 +693,122 @@
       startButton.style.display = 'none';
     }
 
-    // Inicializar variables
+    function togglePause() {
+      if (isGameOver) return;
+      isPaused = !isPaused;
+      pauseButton.innerText = isPaused ? '▶️' : '⏸';
+    }
+
+    function setDifficulty(newDifficulty) {
+      if (newDifficulty === 'advanced') {
+        pauseButton.style.display = 'none';
+        isPaused = false; // Asegurarse de que no esté en pausa
+      } else {
+        pauseButton.style.display = 'flex';
+        pauseButton.innerText = '⏸';
+      }
+    }
+
+    // Listener para cambios en la dificultad
+    difficultySelect.addEventListener('change', () => {
+      const selectedDifficulty = difficultySelect.value;
+      setDifficulty(selectedDifficulty);
+    });
+
+    // Función para iniciar el bucle del juego
+    function update(time = 0) {
+      if (!isPaused && !isGameOver) {
+        const deltaTime = time - lastTime;
+        lastTime = time;
+
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) {
+          playerDrop();
+        }
+
+        draw();
+      }
+      requestAnimationFrame(update);
+    }
+
+    // Funciones para guardar y cargar el juego
+    function saveGame() {
+      const gameState = {
+        arena: arena,
+        player: {
+          pos: player.pos,
+          matrix: player.matrix,
+          hold: player.hold,
+          canHold: player.canHold,
+          score: player.score,
+          highScore: player.highScore,
+        },
+        ghost: ghost,
+        nextPiece: nextPiece,
+        difficulty: difficultySelect.value,
+        isPaused: isPaused,
+        isGameOver: isGameOver
+      };
+      localStorage.setItem('tetrisGameState', JSON.stringify(gameState));
+      alert('Juego guardado exitosamente');
+      soundMove.play();
+    }
+
+    function loadGame() {
+      const savedState = JSON.parse(localStorage.getItem('tetrisGameState'));
+      if (savedState) {
+        // Restaurar el estado del juego
+        for (let y = 0; y < arena.length; y++) {
+          for (let x = 0; x < arena[y].length; x++) {
+            arena[y][x] = savedState.arena[y][x];
+          }
+        }
+
+        player.pos = savedState.player.pos;
+        player.matrix = savedState.player.matrix;
+        player.hold = savedState.player.hold;
+        player.canHold = savedState.player.canHold;
+        player.score = savedState.player.score;
+        player.highScore = savedState.player.highScore;
+
+        ghost.pos = savedState.ghost.pos;
+        ghost.matrix = savedState.ghost.matrix;
+
+        nextPiece = savedState.nextPiece;
+
+        difficultySelect.value = savedState.difficulty;
+        setDifficulty(savedState.difficulty);
+        dropInterval = difficultySettings[savedState.difficulty];
+
+        isPaused = savedState.isPaused;
+        isGameOver = savedState.isGameOver;
+
+        updateScore();
+        drawNext();
+        drawHold();
+        draw();
+        alert('Juego cargado exitosamente');
+        soundMove.play();
+
+        if (isGameOver) {
+          startButton.style.display = 'block';
+          pauseButton.style.display = 'none';
+        } else {
+          startButton.style.display = 'none';
+          pauseButton.style.display = (savedState.difficulty === 'advanced') ? 'none' : 'flex';
+        }
+      } else {
+        alert('No hay partida guardada');
+      }
+    }
+
+    // Inicializar el juego
     player.hold = null;
-    nextPiece = null;
+    nextPiece = createPiece(pieces[(pieces.length * Math.random()) | 0]);
     drawNext();
     drawHold();
+    pauseButton.style.display = 'flex';
+    pauseButton.innerText = '⏸';
   </script>
 </body>
 </html>
